@@ -1,0 +1,59 @@
+personal:
+  name: "Ahsan Ali"
+  first_name: "Ahsan"
+  last_name: "Ali"
+  email: "ahsantechnical003@gmail.com"
+  phone: "+92 300 8156021"
+  location: "Islamabad, Pakistan (Open to Remote Worldwide)"
+  linkedin: "https://linkedin.com/in/ahsantechnical003"
+  github: "https://github.com/ahsabaahsab8-sudo"
+  portfolio: "https://natureai.online"
+  resume_path: "AhsanAli_Resume_v5.pdf"
+
+summary: >
+  Flutter, Mobile, and Web Engineer with 3+ years of production experience shipping 
+  cross-platform mobile apps on Google Play, interactive 3D WebGL experiences, and Python-based 
+  AI agent workflows. Published Nature AI on Play Store with integrated computer vision and LLMs.
+
+skills:
+  mobile:
+    - "Flutter"
+    - "Dart"
+    - "iOS / Android"
+    - "State Management (Bloc, Riverpod, Provider)"
+  frontend_3d:
+    - "React.js"
+    - "WebGL"
+    - "Three.js"
+    - "Next.js"
+    - "Tailwind CSS"
+  ai_backend:
+    - "Python"
+    - "LLM Agents (LangChain, LangGraph)"
+    - "n8n Automation Workflows"
+    - "FastAPI"
+    - "REST & WebSockets"
+
+work_examples:
+  - name: "Nature AI (Play Store Published App)"
+    link: "https://natureai.online"
+    tech: "Flutter, Dart, AI Species Classification, Computer Vision"
+    description: "Published production mobile app on Google Play with 100% store approval. Features real-time offline AI identification and interactive UI."
+  - name: "3D Interactive WebGL Marketing Experience"
+    link: "https://natureai.online"
+    tech: "React, WebGL, Three.js, Shaders"
+    description: "Built high-performance 60fps 3D interactive graphics for web marketing and immersive interfaces."
+  - name: "Autonomous AI Job & Signal Agent Systems"
+    link: "https://github.com/ahsabaahsab8-sudo"
+    tech: "Python, Playwright, LLM Orchestration, n8n"
+    description: "Engineered autonomous pipelines that ingest, parse, rank, and apply to opportunities with dynamic LLM generation."
+
+voice_notes: >
+  Direct, builder-first tone. Highlight real shipped applications on Google Play, 
+  3D WebGL performance optimizations, and hands-on AI agent engineering. 
+  Focus on high agency, clean architecture, and rapid deployment.
+
+eeo:
+  gender: "Male"
+  veteran: "No"
+  disability: "No"
