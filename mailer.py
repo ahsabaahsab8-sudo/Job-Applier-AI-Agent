@@ -53,6 +53,7 @@ class GmailSender:
             scopes = data.get("scopes", [])
             has_send_scope = any("gmail.send" in s or "mail.google.com" in s for s in scopes)
             if not has_send_scope:
+                # Token only has readonly scope
                 return None
 
             creds = Credentials(
@@ -84,6 +85,12 @@ class GmailSender:
         html_content: str,
         plain_text: Optional[str] = None
     ) -> bool:
+        """
+        Sends an HTML email with PDF resume attached.
+        Supports both:
+        1. Gmail API (OAuth token)
+        2. Gmail SMTP (App Password)
+        """
         if self.dry_run:
             print("\n" + "="*60)
             print(" [DRY-RUN MODE] Email Prepared (NOT SENT)")
@@ -135,18 +142,48 @@ class GmailSender:
             except Exception as e:
                 print(f"[-] Gmail API send failed: {e}, attempting SMTP fallback...")
 
-        # Method 2: Try Gmail SMTP SSL (App Password)
+        # Method 2: Try Gmail SMTP (SSL 465 or STARTTLS 587 with IPv4 preference)
         clean_app_password = self.app_password.replace(" ", "").strip() if self.app_password else ""
         if clean_app_password:
+            # Prefer IPv4 on Linux VPS to avoid [Errno 101] Network is unreachable
+            import socket
+            _orig_getaddrinfo = socket.getaddrinfo
+            def _ipv4_first_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+                try:
+                    return _orig_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+                except Exception:
+                    return _orig_getaddrinfo(host, port, family, type, proto, flags)
+
+            socket.getaddrinfo = _ipv4_first_getaddrinfo
+
+            # Attempt A: Port 465 (SSL)
             try:
-                with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=20) as server:
                     server.login(self.sender_email, clean_app_password)
                     server.send_message(msg)
-                print(f"[+] [Gmail SMTP SSL] Sent application to: {to_email}")
+                print(f"[+] [Gmail SMTP SSL :465] Sent application to: {to_email}")
                 return True
-            except Exception as e:
-                print(f"[-] SMTP send failed to {to_email}: {e}")
-                return False
+            except Exception as e465:
+                print(f"[-] Port 465 SSL failed ({e465}), trying Port 587 STARTTLS...")
+
+            # Attempt B: Port 587 (STARTTLS fallback)
+            try:
+                with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as server:
+                    server.ehlo()
+                    server.starttls()
+                    server.ehlo()
+                    server.login(self.sender_email, clean_app_password)
+                    server.send_message(msg)
+                print(f"[+] [Gmail SMTP STARTTLS :587] Sent application to: {to_email}")
+                return True
+            except Exception as e587:
+                print(f"[-] Port 587 STARTTLS failed to {to_email}: {e587}")
+            finally:
+                socket.getaddrinfo = _orig_getaddrinfo
+
+            return False
 
         print("[!] Cannot send email: No valid Gmail API token with 'gmail.send' scope and no GMAIL_APP_PASSWORD found.")
+        print("    Either run: python auth_gmail_oauth.py to authorize OAuth send scope,")
+        print("    Or set GMAIL_APP_PASSWORD in .env.")
         return False
