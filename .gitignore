@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.browser-profile/
+.gmail-browser-profile/
+.simplify-browser-profile/
+*-browser-profile/
+codebase/.browser-profile/
